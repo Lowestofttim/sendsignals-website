@@ -91,7 +91,7 @@
     <a href="#policy">Policy</a>
     <a href="#team">About</a>
     <a href="#contact">Contact</a>
-    <a href="https://sendsignals-app.vercel.app/login" class="nav-login">Log in</a>
+    <a href="https://app.sendsignals.co.uk/login" class="nav-login">Log in</a>
   </div>
   <button class="hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')">&#9776;</button>
 </nav>
@@ -152,7 +152,7 @@
         <li>Always under 10 seconds, no typing required</li>
       </ul>
       <div class="spacer"></div>
-      <a href="https://sendsignals-app.vercel.app/checkin" class="demo-link">Try the student demo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a href="https://app.sendsignals.co.uk/checkin" class="demo-link">Try the student demo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
     <div class="product-card">
       <h3>Staff Platform</h3>
@@ -170,7 +170,7 @@
         <li>Pattern detection flags students who need a check-in</li>
       </ul>
       <div class="spacer"></div>
-      <a href="https://sendsignals-app.vercel.app/morning" class="demo-link">Try the staff demo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      <a href="https://app.sendsignals.co.uk/morning" class="demo-link">Try the staff demo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
   </div>
 </section>
@@ -254,7 +254,7 @@
     btn.disabled = true;
     btn.textContent = 'Sending...';
     try {
-      var res = await fetch('https://sendsignals-app.vercel.app/api/demo-request', {
+      var res = await fetch('https://app.sendsignals.co.uk/api/demo-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
