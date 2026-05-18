@@ -82,6 +82,8 @@
     .flow-card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--white); }
     .flow-blurb { color: var(--gray); font-size: 0.88rem; margin-bottom: 1.25rem; line-height: 1.5; }
     .flow-mini { width: 100%; margin-top: auto; margin-bottom: 1rem; }
+    /* margin-top: auto on both .flow-mini AND .flow-tag splits available space evenly,
+       which vertically centres the mini between the blurb above and the tag below. */
     /* Stage 1 — RAG buttons (compact) */
     .rag-mini { display: flex; gap: 0.4rem; }
     .rag-mini .rag-btn { flex: 1; padding: 0.6rem 0.25rem; font-size: 0.78rem; border-radius: 8px; }
@@ -99,7 +101,7 @@
     .hm-name { color: var(--gray-light); flex: 1; text-align: left; }
     .hm-state { color: var(--blue-light); font-size: 0.65rem; background: rgba(45,125,210,0.12); padding: 0.15rem 0.5rem; border-radius: 10px; white-space: nowrap; }
     /* Tag at the bottom of each card */
-    .flow-tag { font-size: 0.7rem; color: var(--blue-light); background: rgba(45,125,210,0.12); border: 1px solid rgba(45,125,210,0.25); padding: 0.25rem 0.75rem; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .flow-tag { font-size: 0.7rem; color: var(--blue-light); background: rgba(45,125,210,0.12); border: 1px solid rgba(45,125,210,0.25); padding: 0.25rem 0.75rem; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-top: auto; }
     .flow-arrow { display: flex; align-items: center; justify-content: center; color: var(--blue-light); }
     .flow-arrow svg { opacity: 0.7; }
     /* Screenshot mockup section */
@@ -255,11 +257,11 @@
           <path d="M72 70 Q72 54 84 54 Q96 54 96 70" fill="none" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round"/>
           <!-- Ground -->
           <line x1="15" y1="85" x2="105" y2="85" stroke="#cbd5e1" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2 3"/>
-          <!-- Logo's signal arcs, scaled 1.5x and translated onto the staff's right shoulder -->
-          <!-- Exact same path shapes as the brand mark, just repositioned -->
-          <path d="M56 33 Q53 24 62 18" fill="none" stroke="#4caf50" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M53 39 Q47 27 59 15" fill="none" stroke="#ff9800" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M50 45 Q41 30 56 12" fill="none" stroke="#f44336" stroke-width="2.4" stroke-linecap="round"/>
+          <!-- Logo's signal arcs, scaled and flipped so the bulge faces the student -->
+          <!-- Same start/end positions, control points mirrored across each start-end line -->
+          <path d="M56 33 Q64 29 62 18" fill="none" stroke="#4caf50" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M53 39 Q64 31 59 15" fill="none" stroke="#ff9800" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M50 45 Q64 34 56 12" fill="none" stroke="#f44336" stroke-width="2.4" stroke-linecap="round"/>
         </svg>
       </div>
       <h4>Signal actioned</h4>
@@ -291,14 +293,21 @@
 
 <section id="features">
   <h2 class="section-title">Built Around the Student</h2>
-  <p class="section-subtitle">Every design decision starts with the student — especially the ones who find things hardest.</p>
+  <p class="section-subtitle">Every design decision starts with the student, especially the ones who maybe find the school environment the most challenging to navigate.</p>
   <div class="features-grid">
     <div class="feature-card"><div class="feature-icon">&#9201;</div><h3>3 Taps, 10 Seconds</h3><p>A lesson check-in that's faster than unlocking a phone. Designed to never feel like a burden.</p></div>
     <div class="feature-card"><div class="feature-icon">&#128274;</div><h3>Completely Private</h3><p>Students only ever see their own data. Database-level security means no student can access another's information.</p></div>
-    <div class="feature-card"><div class="feature-icon">&#127912;</div><h3>Identical Every Time</h3><p>The interface never changes layout or position. Autistic students rely on predictability. We protect it.</p></div>
-    <div class="feature-card"><div class="feature-icon">&#128172;</div><h3>Pre-set Signals</h3><p>No blank text boxes. Students tap a message from a pre-set list — no typing, no composing, no pressure.</p></div>
-    <div class="feature-card"><div class="feature-icon">&#128737;</div><h3>Safeguarding Built In</h3><p>Students always see the safeguarding response. No hidden escalations that could erode trust.</p></div>
-    <div class="feature-card"><div class="feature-icon">&#9855;</div><h3>Accessible First</h3><p>WCAG AA minimum. Screen reader support. High contrast. No motion-dependent interactions.</p></div>
+    <div class="feature-card"><div class="feature-icon">&#127912;</div><h3>Identical Every Time</h3><p>The interface never changes layout or position. Students tap a message from a pre-set list. No typing, no composing and no pressure.</p></div>
+  </div>
+</section>
+
+<section id="staff-features">
+  <h2 class="section-title">Built Around the Team</h2>
+  <p class="section-subtitle">Built so SEND teams stay proactive, spotting patterns and coordinating support before small struggles build up.</p>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">&#128200;</div><h3>Spot patterns early</h3><p>Year group analysis and individual pupil profiles surface trends as they emerge. Compare weekly data side by side to see who's improving, who's struggling, and what's shifting across the school.</p></div>
+    <div class="feature-card"><div class="feature-icon">&#127919;</div><h3>Act with context</h3><p>Every signal arrives with the lesson, period, and recent pattern attached. Triage from the Action Hub and coordinate the SEND team's response in one place.</p></div>
+    <div class="feature-card"><div class="feature-icon">&#128203;</div><h3>Ready for reviews</h3><p>Generate reports for APDR reviews, parent meetings, and data drops in a click. The evidence is structured, timestamped, and ready when it matters.</p></div>
   </div>
 </section>
 
