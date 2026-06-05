@@ -390,9 +390,9 @@
 
 <footer>
   <div class="footer-links">
-    <a href="#" onclick="openLegal('privacy'); return false;">Privacy Policy</a>
-    <a href="#" onclick="openLegal('terms'); return false;">Terms &amp; Conditions</a>
-    <a href="#" onclick="openLegal('cookies'); return false;">Cookie Policy</a>
+    <a href="#privacy" onclick="openLegal('privacy'); return false;">Privacy Policy</a>
+    <a href="#terms" onclick="openLegal('terms'); return false;">Terms &amp; Conditions</a>
+    <a href="#cookies" onclick="openLegal('cookies'); return false;">Cookie Policy</a>
   </div>
   <p>&copy; 2026 Send Signals Ltd. Because inclusion starts with listening.</p>
   <p style="margin-top:0.5rem;">sendsignals.co.uk</p>
@@ -411,8 +411,14 @@
 </div>
 
 <script>
-  function openLegal(id) { document.getElementById(id).classList.add('active'); }
-  function closeLegal(id) { document.getElementById(id).classList.remove('active'); }
+  function openLegal(id) { document.getElementById(id).classList.add('active'); if (history.replaceState) history.replaceState(null, '', '#' + id); }
+  function closeLegal(id) { document.getElementById(id).classList.remove('active'); if (history.replaceState) history.replaceState(null, '', location.pathname + location.search); }
+  // Deep-link straight to a policy, e.g. sendsignals.co.uk/#privacy — gives app
+  // stores, emails and contracts a stable, shareable privacy-policy URL.
+  window.addEventListener('DOMContentLoaded', function () {
+    var h = (location.hash || '').replace('#', '');
+    if (['privacy', 'terms', 'cookies'].indexOf(h) !== -1) openLegal(h);
+  });
 
   document.getElementById('demoForm').addEventListener('submit', async function(e) {
     e.preventDefault();
