@@ -1,0 +1,30 @@
+name: Website CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: website-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  static-site:
+    name: Website CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validate static website
+        run: |
+          test -f index.html
+          test -f CNAME
+          grep -q "sendsignals.co.uk" CNAME
+          grep -q "https://app.sendsignals.co.uk/api/demo-request" index.html
+          grep -q "Book a School Demo" index.html
+          ! grep "sendsignals-app.vercel.app" index.html
+          ! grep "Looking for Pilot Schools" index.html

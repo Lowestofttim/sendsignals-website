@@ -1,0 +1,7 @@
+# Code owners for Send Signals website.
+* @Lowestofttim
+
+# Public-facing brand, legal copy, forms, and governance.
+/index.html @Lowestofttim
+/CNAME @Lowestofttim
+/.github/ @Lowestofttim
