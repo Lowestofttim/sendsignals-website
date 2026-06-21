@@ -360,6 +360,8 @@
       <input type="email" name="email" placeholder="Email address" required>
       <input type="text" name="school" placeholder="School name" required>
       <input type="text" name="role" placeholder="Your role" required>
+      <!-- WI014-01: Cloudflare Turnstile renders here when a site key is configured (see the script below). -->
+      <div id="turnstileWidget" style="margin:0 0 1rem;"></div>
       <button type="submit">Request a demo</button>
     </form>
     <div class="form-success" id="demoSuccess">Thanks! We'll be in touch shortly to arrange a school demo.</div>
@@ -415,7 +417,23 @@
   </div>
 </div>
 
+<!-- WI014-01: Cloudflare Turnstile (bot protection for the demo form). The widget
+     only renders + enforces when TURNSTILE_SITE_KEY (below) is set together with the
+     app's TURNSTILE_SECRET_KEY (Cloudflare issues both at once). -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__ssTurnstileLoad" async defer></script>
 <script>
+  // WI014-01: paste your Cloudflare Turnstile PUBLIC site key here AND set the matching
+  // TURNSTILE_SECRET_KEY in the app env at the same time. While this is empty, no widget
+  // shows and no token is sent, and the app's /api/demo-request skips verification
+  // (secret unset) — so the form keeps working exactly as before. Set both together and
+  // the widget renders here and the server starts enforcing it.
+  var TURNSTILE_SITE_KEY = '';
+  var __ssTurnstileWidgetId = null;
+  window.__ssTurnstileLoad = function () {
+    if (TURNSTILE_SITE_KEY && window.turnstile) {
+      __ssTurnstileWidgetId = window.turnstile.render('#turnstileWidget', { sitekey: TURNSTILE_SITE_KEY });
+    }
+  };
   function openLegal(id) { document.getElementById(id).classList.add('active'); if (history.replaceState) history.replaceState(null, '', '#' + id); }
   function closeLegal(id) { document.getElementById(id).classList.remove('active'); if (history.replaceState) history.replaceState(null, '', location.pathname + location.search); }
   // Deep-link straight to a policy, e.g. sendsignals.co.uk/#privacy — gives app
@@ -433,6 +451,17 @@
     var errorEl = document.getElementById('demoError');
     successEl.style.display = 'none';
     errorEl.style.display = 'none';
+    // WI014-01: when the Turnstile widget is active, include its token and require it
+    // to be solved before submitting. (No-op while no site key is configured.)
+    var turnstileToken = '';
+    if (TURNSTILE_SITE_KEY && window.turnstile && __ssTurnstileWidgetId !== null) {
+      turnstileToken = window.turnstile.getResponse(__ssTurnstileWidgetId) || '';
+      if (!turnstileToken) {
+        errorEl.textContent = 'Please complete the verification and try again.';
+        errorEl.style.display = 'block';
+        return;
+      }
+    }
     btn.disabled = true;
     btn.textContent = 'Sending...';
     try {
@@ -443,7 +472,8 @@
           name: form.name.value,
           email: form.email.value,
           school: form.school.value,
-          role: form.role.value
+          role: form.role.value,
+          turnstileToken: turnstileToken
         })
       });
       if (res.ok) {
@@ -453,9 +483,12 @@
         throw new Error('Request failed');
       }
     } catch (err) {
+      errorEl.textContent = 'Something went wrong. Please try again or email us directly.';
       errorEl.style.display = 'block';
       btn.disabled = false;
-      btn.textContent = 'Request my demo';
+      btn.textContent = 'Request a demo';
+      // WI014-01: reset the Turnstile widget so the user can solve a fresh challenge.
+      if (window.turnstile && __ssTurnstileWidgetId !== null) window.turnstile.reset(__ssTurnstileWidgetId);
     }
   });
 </script>
