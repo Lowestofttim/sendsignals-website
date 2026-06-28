@@ -92,12 +92,13 @@ safeguarding duties.**
 
 By default, pupil check-ins and messages are retained for **365 days**, after
 which a scheduled purge deletes them. This window is **configurable per school**
-(subject to a minimum of 30 days). Welfare-flag disclosure messages, and
-check-ins still referenced by an open record, are **retained beyond the window** —
-the scheduled purge keeps them rather than auto-deleting them, so a school's audit
-trail is not silently lost. A defined disclosure-retention period (e.g. a
-leave-date + N years rule) `[LEGAL REVIEW: define + implement]` is not yet
-implemented. Educational records that the school maintains (e.g. provision/review
+(subject to a minimum of 30 days). Welfare-flag disclosure messages are kept for
+the **same default period (365 days, configurable)** and then deleted — **Send
+Signals is not the school's long-term safeguarding record.** Before deletion the
+school can review, export, action and mark a flag as **recorded in its own
+safeguarding system**; after deletion only minimal, no-pupil-detail evidence of the
+flag and its deletion is kept, and the school is notified of open flags approaching
+deletion so nothing is lost silently. Educational records that the school maintains (e.g. provision/review
 records and accounts) are not auto-deleted and require an explicit operator action
 to remove.
 

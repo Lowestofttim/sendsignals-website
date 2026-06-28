@@ -19,9 +19,10 @@ The service is operated by **Send Signals Limited**, a
 company registered in England & Wales (company no. **17147174**),
 registered office **7 Paradise Grove, Walsall, England, WS3 4NN**.
 
-- Privacy / data protection contact: **privacy@sendsignals.co.uk**
-  `[LEGAL REVIEW: name a DPO / data-protection lead here if one is appointed]`
+- Privacy / data protection contact: **Nicola Youngman (Data Protection Lead)** — **privacy@sendsignals.co.uk**
 - ICO registration number: **ZC138681**
+
+_We have assessed whether a statutory Data Protection Officer is required and, at current scale, have appointed a named Data Protection Lead; we will review this as the service grows._ `[LEGAL REVIEW: confirm the DPO assessment + review triggers]`
 
 ## 2. Our role — the school is the controller, we are the processor
 
@@ -164,11 +165,15 @@ the school can configure the period.
   (configurable per school). A scheduled purge runs daily and deletes check-ins
   and messages older than the school's chosen window (with a 30-day minimum
   floor).
-- **Welfare flags / disclosures:** messages tied to a welfare flag are **retained
-  beyond the normal window** — the scheduled purge keeps them rather than
-  auto-deleting them, so a school's safeguarding record isn't lost to routine
-  purging. A defined disclosure-retention period (e.g. a leave-date + N years rule)
-  `[LEGAL REVIEW: define + implement]` is not yet implemented.
+- **Welfare flags / disclosures:** these are kept for the **same default period as
+  other check-ins (365 days, configurable per school)** and then deleted by the
+  routine purge — **Send Signals is not the school's long-term safeguarding record.**
+  Before a flag is deleted, the school can review, export and act on it, and mark it
+  as **recorded in the school's own safeguarding system**; after deletion we keep only
+  **minimal evidence with no pupil detail** that a flag existed and was deleted. We
+  surface open flags approaching their deletion date so nothing is lost silently — it
+  is the school's responsibility, as controller, to record disclosures in its own
+  safeguarding system.
 - **Educational records** (e.g. SEND review/provision records) are **not** removed
   by the routine purge — those require explicit operator action.
 - **Operational logs:** security auth-failure logs and email-delivery logs are

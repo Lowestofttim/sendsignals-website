@@ -117,11 +117,11 @@ The cookies themselves expire as set out in section 1. The pupil data they help
 access is kept under the school's retention settings: by default, pupil check-in
 and message history is retained for **365 days** and then automatically deleted
 by a nightly purge. A school can change this window (the minimum the purge will
-honour is 30 days). Welfare-flag disclosure records are **retained beyond the
-window** — the scheduled purge keeps them rather than auto-deleting them, so a
-school's safeguarding record isn't lost to routine purging. A defined
-disclosure-retention period (e.g. a leave-date + N years rule) `[LEGAL REVIEW:
-define + implement]` is not yet implemented. When a school stops using Send
+honour is 30 days). Welfare-flag disclosure records are kept for the **same default
+period (365 days, configurable)** and then deleted — Send Signals is **not** the
+school's long-term safeguarding record; before deletion the school can review,
+export, action and mark a flag as recorded in its own safeguarding system, and only
+minimal, no-pupil-detail evidence is kept afterwards. When a school stops using Send
 Signals, its data is deleted or returned to it in line with the Data Processing
 Agreement. Full detail is in the **Privacy Policy**.
 
