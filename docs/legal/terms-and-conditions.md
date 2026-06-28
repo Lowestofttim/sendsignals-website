@@ -21,9 +21,11 @@ Send Signals provides a pupil wellbeing check-in platform for schools, accessed
 via the web app and (where applicable) native mobile apps. Access is provided
 through school-managed accounts (e.g. Microsoft/Google sign-in) or credentials
 issued by the school. The data subjects are **children**, so the service is built
-to UK GDPR and the ICO **Age Appropriate Design Code (Children's Code)**:
-data minimisation, the best interests of the child, and no profiling of children
-for marketing.
+to UK GDPR and is **designed around the principles of the ICO Age Appropriate
+Design Code (Children's Code)**: data minimisation, the best interests of the
+child, and no profiling of children for marketing. `[LEGAL REVIEW: confirm
+whether the Children's Code applies in full given Send Signals' processor role,
+or only its principles — ICO edtech guidance is role-dependent]`
 
 ## 2. Accounts & access
 
@@ -105,11 +107,22 @@ match the DPA and the school's records-retention policy]`
 
 ## 8. Children's data
 
-The data subjects are children, so Send Signals applies the ICO Children's Code:
-data minimisation, the best interests of the child, no behavioural advertising,
-and no third-party tracking or profiling of pupils. Pupils can only ever see their
-**own** data. Notifications are data-minimised (alert emails do not contain a
-pupil's name; staff sign in to view details).
+The data subjects are children, so Send Signals is **designed around the
+principles of the ICO Age Appropriate Design Code (Children's Code)**: data
+minimisation, the best interests of the child, no behavioural advertising, and no
+third-party tracking or profiling of pupils. `[LEGAL REVIEW: confirm whether the
+Children's Code applies in full given Send Signals' processor role, or only its
+principles — ICO edtech guidance is role-dependent]` Pupils can only ever see
+their **own** data. Welfare-alert emails are data-minimised (no pupil name or
+check-in content). By default, push-notification payloads are generic and contain
+no pupil name, check-in rating or welfare-disclosure content (e.g. "A welfare flag
+was raised. Open the Action Hub for details."). If a school turns on the optional
+"Show student details on lock screen" setting (OFF by default, not recommended),
+wellbeing-alert and welfare-flag push messages then include the pupil's first name
+and, for welfare-flag disclosures, the disclosure message text — visible on a
+locked device. A school enabling this does so under its own policy/risk
+assessment. The in-app Action Hub (behind sign-in) always shows full detail
+regardless of this setting.
 
 ## 9. Data-subject rights
 
@@ -136,8 +149,8 @@ in the **Data Processing Agreement**; the providers in use are:
 |----------|---------|------------------|
 | Supabase | Database, authentication & file storage | UK (London region) — pupil data stored at rest in the UK |
 | Vercel | Application hosting / CDN | Global edge; US-headquartered — not pinned to a single region; processes data only in transit. `[LEGAL REVIEW: confirm transfer mechanism per provider]` |
-| Google Firebase Cloud Messaging | Native mobile push notifications | US/global — push payloads are data-minimised (no pupil name or check-in content). `[LEGAL REVIEW: confirm transfer mechanism per provider]` |
-| Resend | Transactional email (e.g. alert and account emails) | US — alert emails are data-minimised (no pupil name). `[LEGAL REVIEW: confirm transfer mechanism per provider]` |
+| Google Firebase Cloud Messaging | Native mobile push notifications | US/global — by default, push payloads are generic (no pupil name, check-in rating or welfare-disclosure content; e.g. "A welfare flag was raised. Open the Action Hub for details."). If a school turns on the optional "Show student details on lock screen" setting (OFF by default, not recommended), wellbeing-alert and welfare-flag push messages then include the pupil's first name and, for welfare-flag disclosures, the disclosure message text — visible on a locked device. A school enabling this does so under its own policy/risk assessment. The in-app Action Hub (behind sign-in) always shows full detail regardless of this setting. `[LEGAL REVIEW: confirm transfer mechanism per provider]` |
+| Resend | Transactional email | US — Transactional email: staff/admin emails; data-minimised welfare-alert emails (no pupil name or check-in content); and student-access/login emails sent to a pupil's own email address containing a personal sign-in link and the school name (the pupil's name is NOT included). Resend therefore processes pupil email addresses and sign-in links. `[LEGAL REVIEW: confirm the Resend DPA covers children's personal data]` `[LEGAL REVIEW: confirm transfer mechanism per provider]` |
 | Stripe | Billing / payments (school-facing) | US/global; UK entity for UK billing — processes the **school's** payer/billing details only, **no pupil data**. `[LEGAL REVIEW: confirm transfer mechanism per provider]` |
 | Cloudflare Turnstile | Bot / abuse protection on the public demo and sign-up forms | US/global — no pupil data; used to protect public forms from automated abuse. `[LEGAL REVIEW: confirm transfer mechanism per provider]` |
 
@@ -160,7 +173,11 @@ Send Signals applies, among other measures:
 - **Tenant isolation** via Postgres Row-Level Security — one school can never read
   another's data, and a pupil can only see their own; this is tested
   automatically in the build pipeline.
-- **httpOnly session cookies** and a **Content-Security-Policy**.
+- **Secure session cookies.** Authentication uses secure, same-site Supabase
+  session cookies. In the current browser client these cookies are readable by
+  the application's JavaScript, so we also rely on TLS, the SameSite attribute, a
+  Content-Security-Policy, database tenant isolation (RLS), least-privilege
+  access and audit logging.
 - **Two-factor authentication (2FA)** available for admin accounts. `[LEGAL REVIEW:
   confirm 2FA is enforced for all admin accounts at launch]`
 - **Audit logging** of configuration and permission changes.

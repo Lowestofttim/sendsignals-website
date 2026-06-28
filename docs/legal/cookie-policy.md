@@ -19,17 +19,27 @@ explains how pupil data is handled) and our **Terms & Conditions**.
 
 ## 1. What we use
 
-| Name / type | Purpose | Category | Duration |
-|-------------|---------|----------|----------|
-| Supabase authentication / session cookies (`sb-…`) | Keeps a signed-in user (staff or pupil) securely logged in; refreshed on each request | Strictly necessary | Session / until sign-out or token expiry (managed by Supabase) |
-| HQ idle-timeout cookie (`hq_active`) | Times out an idle Send Signals **staff/admin** console session; **not used on pupil devices** | Strictly necessary | Up to 8 hours (refreshed on activity) |
-| Cloudflare Turnstile challenge cookie | Set by Cloudflare on the **public sign-up / demo** pages only, to tell humans from bots when an account or demo is requested; not set on the pupil check-in flow | Strictly necessary (anti-abuse) | Short-lived (set by Cloudflare) |
-| Service-worker / PWA cache (browser storage, not a cookie) | Caches app assets so the installable app loads and works offline | Strictly necessary | Until the app is updated or browser storage is cleared |
-| Local app state (browser `localStorage`/`sessionStorage`, not a cookie) | Remembers in-app settings (e.g. last-used view) to make the app usable; held on the device, not sent for tracking | Functional | Until cleared by the user |
+| Name / Pattern | Type | Purpose | Duration | Category |
+|----------------|------|---------|----------|----------|
+| `sb-*` | Cookie | Supabase authentication/session (keeps a signed-in user logged in) | Session / until sign-out (provider-managed) | Strictly necessary. (Secure + SameSite=Lax; readable by the app's JavaScript, not httpOnly.) |
+| `hq_active` | Cookie | staff/admin idle-timeout timestamp (auto sign-out) | 8 hours | Strictly necessary (security). |
+| `ss_kiosk_token` | Cookie (httpOnly) | device authentication on school-supplied kiosk tablets only | per kiosk session | Strictly necessary. |
+| Cloudflare Turnstile challenge cookie (`cf_*`/`__cf*`, set by Cloudflare) | Cookie (third-party) | bot/abuse protection on the PUBLIC sign-up and demo forms only (never the pupil app) | short-lived | Strictly necessary. |
+| Demo/sandbox session cookies | Cookie (httpOnly) | public demo mode only | demo session | Strictly necessary. |
+| Telemetry/error client id | Browser storage (localStorage) | a random pseudonymous id for first-party crash/error telemetry (NOT advertising/tracking; no third party) | until cleared | Functional. |
+| Remember-me (email + flag) | Browser storage (localStorage) | pre-fills your email on the sign-in screen IF you tick "remember me" | until cleared | Functional (user-initiated). |
+| Kiosk state (mode / token / student name / fleet token) | Browser storage (localStorage) | supplied-tablet kiosk mode only | until cleared | Strictly necessary (kiosk). |
+| UI/app state (school-logo cache, demo viewing date, welcome-seen, PWA-install-dismissed, progress-celebrated flags, deep-link-handled, session heartbeat) | Browser storage (local/session) | remember UI preferences and app state | until cleared / session | Functional. |
 
-The Supabase session cookies are **HTTP-only** where set as cookies (not readable
-by page scripts) and are marked **Secure** in production. We do not sell or share
-the contents of any of these items, and none of them are used for advertising.
+Browser local/session storage are not cookies but are listed here for
+transparency; none are used for advertising or cross-site tracking.
+
+The Supabase session cookies are marked **Secure** in production. Authentication
+uses secure, same-site Supabase session cookies. In the current browser client
+these cookies are readable by the application's JavaScript, so we also rely on
+TLS, the SameSite attribute, a Content-Security-Policy, database tenant isolation
+(RLS), least-privilege access and audit logging. We do not sell or share the
+contents of any of these items, and none of them are used for advertising.
 
 `[LEGAL REVIEW: confirm the exact cookie names and durations shown to users
 match the live deployment at publication — the Supabase session-cookie names and
@@ -49,11 +59,11 @@ TTLs are controlled by Supabase and the project's session settings.]`
 
 ## 3. Consent (PECR)
 
-The items in section 1 are **strictly necessary or functional** for the service
-to work, so under the Privacy and Electronic Communications Regulations (PECR)
-they do not require prior consent. Because we set **no** analytics, advertising
-or other non-essential cookies, the app does not need a cookie-consent banner for
-its own functioning.
+We only store or access information on a device where it is strictly necessary (a
+PECR exception) or where we have obtained the required consent / provided the
+required objection mechanism. Because we set **no** analytics, advertising or
+other cross-site tracking cookies, the app does not need a cookie-consent banner
+for its own functioning.
 
 `[LEGAL REVIEW: confirm the marketing website's own cookie banner/wording matches
 this "essential only" position, and that no non-essential storage is set before
@@ -81,8 +91,10 @@ the UK, and that it is reflected consistently here and in the Privacy Policy.]`
 
 ## 5. Children
 
-Send Signals' data subjects are **children**, so we apply the ICO's Age
-Appropriate Design Code ("Children's Code"):
+Send Signals' data subjects are **children**, so the service is **designed around
+the principles of the ICO Age Appropriate Design Code (Children's Code)**: `[LEGAL
+REVIEW: confirm whether the Children's Code applies in full given Send Signals'
+processor role, or only its principles — ICO edtech guidance is role-dependent]`
 
 - We do **not** use cookies or any browser storage to track, profile or target
   children, or to build advertising or behavioural profiles.
@@ -126,12 +138,16 @@ you signing in.
 The session our cookies maintain is protected by, among other measures:
 per-school database isolation (Postgres Row-Level Security, so one school cannot
 read another's data and a pupil can only see their own — covered by automated
-tests), HTTP-only session cookies and a Content-Security-Policy, two-factor
+tests), secure session cookies and a Content-Security-Policy, two-factor
 authentication (2FA) available for admin accounts `[LEGAL REVIEW: confirm 2FA is
 enforced for all admin accounts at launch]`, audit logging of configuration and
 permission changes, encryption in transit (TLS), and point-in-time-recovery (PITR)
 database backups `[LEGAL REVIEW: confirm PITR is enabled on the production plan at
-launch]`. More detail is in the **Privacy Policy**.
+launch]`. Authentication uses secure, same-site Supabase session cookies. In the
+current browser client these cookies are readable by the application's JavaScript,
+so we also rely on TLS, the SameSite attribute, a Content-Security-Policy,
+database tenant isolation (RLS), least-privilege access and audit logging. More
+detail is in the **Privacy Policy**.
 
 ## 9. Your rights and how to exercise them
 
@@ -153,6 +169,11 @@ If you are concerned about how your (or your child's) personal data is handled,
 please raise it with the **school** in the first instance. You also have the
 right to complain to the UK Information Commissioner's Office (ICO) at
 **ico.org.uk** or by calling its helpline.
+
+You can make a data-protection complaint to us at privacy@sendsignals.co.uk. We
+will acknowledge your complaint within 30 days, investigate it and keep you
+updated without undue delay, and tell you the outcome. You also have the right to
+complain to the Information Commissioner's Office (ICO) at ico.org.uk.
 
 ## 11. Contact
 
