@@ -10,7 +10,8 @@ and the **Data Processing Agreement (DPA)** between
 
 Send Signals is a UK school wellbeing **check-in** platform. Pupils tap a simple
 red / amber / green "how am I" signal at set times of day, can raise a short
-welfare "flag", and may add a brief optional note. Staff see those signals and
+welfare "flag", and may attach a brief note chosen from pre-set options (pupils
+have no free-text input). Staff see those signals and
 flags and decide what to do. **Send Signals flags low wellbeing for school staff
 to act on — it is not a clinical, crisis or safeguarding service. The school's
 staff carry out the actual safeguarding.**
@@ -35,7 +36,8 @@ or only its principles — ICO edtech guidance is role-dependent]`
 - Pupils are added by their school; pupils do not self-register.
 - Permission tiers limit what staff can see and do (e.g. an "admin" account owner
   manages invites, authentication and billing; a "full access" pastoral account
-  can view and act on pupil wellbeing data; a "hub access" account is view-only).
+  can view and act on pupil wellbeing data; a "hub access" account is view-only
+  by default).
 
 ## 3. Acceptable use
 
@@ -65,7 +67,8 @@ category data** under UK GDPR Article 9. The **school, as controller, determines
 and documents the lawful basis** — both the Article 6 basis (typically the
 school's **public task**) and the additional Article 9 condition for special
 category data (e.g. **Article 9(2)(g) substantial public interest** in connection
-with safeguarding / education, or another condition the school identifies).
+with safeguarding / education, together with the relevant Schedule 1, Data
+Protection Act 2018 condition, or another condition the school identifies).
 `[LEGAL REVIEW: confirm the Art 6 basis + Art 9 condition wording — this is the
 school's to set; do not assert one on the school's behalf]`
 
@@ -92,13 +95,17 @@ safeguarding duties.**
 
 By default, pupil check-ins and messages are retained for **365 days**, after
 which a scheduled purge deletes them. This window is **configurable per school**
-(subject to a minimum of 30 days). Welfare-flag disclosure messages are kept for
-the **same default period (365 days, configurable)** and then deleted — **Send
-Signals is not the school's long-term safeguarding record.** Before deletion the
-school can review, export, action and mark a flag as **recorded in its own
-safeguarding system**; after deletion only minimal, no-pupil-detail evidence of the
-flag and its deletion is kept, and the school is notified of open flags approaching
-deletion so nothing is lost silently. Educational records that the school maintains (e.g. provision/review
+(subject to a minimum of 30 days). Welfare-flag disclosure messages follow the
+**same school retention window (default 365 days, 30-day minimum)** — **Send
+Signals is not the school's long-term safeguarding record.** At the end of the
+window, a flag the school has marked as **recorded in its own safeguarding
+system** is deleted by the routine purge; a flag not yet marked as recorded is
+**held — and surfaced to staff in the app —** until it is marked recorded or a
+hard backstop of **180 days past the window** passes, whichever comes first (so
+an unrecorded flag may be retained for up to around 545 days in total). Before
+deletion the school can review, export and action a flag; after deletion only
+minimal, no-pupil-detail evidence of the flag and its deletion (school, tier,
+timestamps, deletion reason) is kept. Educational records that the school maintains (e.g. provision/review
 records and accounts) are not auto-deleted and require an explicit operator action
 to remove.
 
@@ -115,15 +122,10 @@ third-party tracking or profiling of pupils. `[LEGAL REVIEW: confirm whether the
 Children's Code applies in full given Send Signals' processor role, or only its
 principles — ICO edtech guidance is role-dependent]` Pupils can only ever see
 their **own** data. Welfare-alert emails are data-minimised (no pupil name or
-check-in content). By default, push-notification payloads are generic and contain
-no pupil name, check-in rating or welfare-disclosure content (e.g. "A welfare flag
-was raised. Open the Action Hub for details."). If a school turns on the optional
-"Show student details on lock screen" setting (OFF by default, not recommended),
-wellbeing-alert and welfare-flag push messages then include the pupil's first name
-and, for welfare-flag disclosures, the disclosure message text — visible on a
-locked device. A school enabling this does so under its own policy/risk
-assessment. The in-app Action Hub (behind sign-in) always shows full detail
-regardless of this setting.
+check-in content), and push-notification payloads are generic by default — see
+the Google Firebase Cloud Messaging entry in section 10 for full detail,
+including the optional "Show student details on lock screen" school setting
+(OFF by default, not recommended).
 
 ## 9. Data-subject rights
 
@@ -155,7 +157,7 @@ in the **Data Processing Agreement**; the providers in use are:
 | Stripe | Billing / payments (school-facing) | US/global; UK entity for UK billing — processes the **school's** payer/billing details only, **no pupil data**. `[LEGAL REVIEW: confirm transfer mechanism per provider]` |
 | Cloudflare Turnstile | Bot / abuse protection on the public demo and sign-up forms | US/global — no pupil data; used to protect public forms from automated abuse. `[LEGAL REVIEW: confirm transfer mechanism per provider]` |
 
-An **optional** AI help/operations assistant (Anthropic Claude Haiku; US; optional,
+An **optional** AI help/operations assistant (Anthropic (Claude); US; optional,
 no pupil data) is available when configured. It receives **only** a staff member's
 typed how-to question (and, for operational alerts, school names + operational
 metadata) — **never pupil records, ratings, welfare flags or SEND data** — and is
@@ -183,8 +185,9 @@ Send Signals applies, among other measures:
   confirm 2FA is enforced for all admin accounts at launch]`
 - **Audit logging** of configuration and permission changes.
 - **Encryption in transit** (TLS/HTTPS).
-- **Point-in-time-recovery (PITR)** database backups. `[LEGAL REVIEW: confirm PITR
-  is enabled on the production plan at launch]`
+- **Database backups**, with **point-in-time recovery (PITR) being enabled for
+  launch**. `[LEGAL REVIEW: confirm PITR is enabled on the production plan at
+  launch]`
 - **Least-privilege** access and audited use of privileged keys.
 
 `[LEGAL REVIEW: confirm encryption-at-rest and backup/PITR commitments are stated
@@ -195,8 +198,8 @@ to match the DPA's security schedule and are not over-stated]`
 Pupil data is stored at rest in the UK (Supabase, London region). The application
 is served over Vercel's global edge network, which is not pinned to a single region
 and processes data only in transit. Some sub-processors (email, push notifications,
-billing, bot-protection) operate outside the UK — see the sub-processor list and
-the International transfers section. Where personal data is transferred to them, an
+billing, bot-protection) operate outside the UK — see the sub-processor list in
+section 10. Where personal data is transferred to them, an
 appropriate transfer safeguard is relied on (e.g. the UK International Data Transfer
 Agreement / Addendum to the EU SCCs). `[LEGAL REVIEW: confirm transfer mechanism
 per provider]`
@@ -220,9 +223,9 @@ commitment in the service agreement, or state explicitly that none is given]`
 ## 15. Intellectual property
 
 All content, design and code is the property of
-**Send Signals Limited**. The Send Signals name and logo are
-trademarks `[LEGAL REVIEW: confirm trademark registration status]`. Schools retain
-ownership of their own data.
+**Send Signals Limited**. The Send Signals name and logo are the subject of
+trademark applications filed April 2026 `[LEGAL REVIEW: confirm registration
+status]`. Schools retain ownership of their own data.
 
 ## 16. Liability
 
@@ -246,12 +249,21 @@ raise it with their **school** (the controller) in the first instance. They also
 have the right to complain to the **Information Commissioner's Office (ICO)**,
 ico.org.uk, though we'd welcome the chance to help resolve it first.
 
-## 19. Governing law
+## 19. Changes to these terms
+
+We may update these terms from time to time. Material changes will be notified
+to schools in advance, and the "last updated" date will be revised; continued
+use of the service after a change takes effect constitutes acceptance of the
+updated terms. `[LEGAL REVIEW: confirm the variation mechanism — notice period,
+and whether school consent (rather than notice) is required for material
+changes]`
+
+## 20. Governing law
 
 These terms are governed by the law of England & Wales and subject to the
 exclusive jurisdiction of its courts.
 
-## 20. Contact
+## 21. Contact
 
 - General: hello@sendsignals.co.uk
 - Data protection / privacy: privacy@sendsignals.co.uk

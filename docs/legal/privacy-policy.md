@@ -4,8 +4,8 @@
 
 > This policy describes how Send Signals handles personal data **as a processor**
 > acting on schools' instructions. Schools (as controllers) publish their own
-> privacy information to pupils and parents. See `README.md` and the Data
-> Processing Agreement (DPA).
+> privacy information to pupils and parents. See the Data Processing Agreement
+> (DPA).
 
 ## 1. Who we are
 
@@ -37,8 +37,9 @@ basis, for telling pupils and parents how their data is used, and for handling
 data-subject requests (see sections 5 and 12). This policy explains, transparently,
 how data is handled within the service.
 
-`[LEGAL REVIEW: confirm the controller/processor model and the split of
-responsibilities with the school in the DPA.]`
+`[LEGAL REVIEW: the controller/processor model was confirmed with the solicitor
+(2026-06-28); remaining — confirm the split of responsibilities with the school
+in the DPA.]`
 
 ## 3. Where Send Signals is itself the controller
 
@@ -53,13 +54,14 @@ controller processing]`
 
 ## 4. The data we process
 
-- **Pupil identity:** name and a school-assigned identifier (typically from the
-  school's Microsoft/Google account).
+- **Pupil identity:** name, school email address and a school-assigned
+  identifier (typically from the school's Microsoft/Google account).
 - **Wellbeing / SEND information (special category data):** check-in ratings
   (green/amber/red), time-slot check-ins (e.g. morning, each lesson, end of day),
-  pre-set signal/message selections, optional short free-text notes a pupil
-  attaches, welfare "flags"/disclosures, and SEND profile fields the school
-  maintains.
+  pre-set signal/message and note selections (pupils have no free-text input —
+  every check-in, note and disclosure is chosen from pre-set options, though the
+  selections remain highly sensitive), welfare "flags"/disclosures, and SEND
+  profile fields the school maintains.
 - **Staff accounts:** name, role, work email, and authentication identifiers.
 - **Technical data:** timestamps of interactions, device/session identifiers, and
   push-notification tokens needed to run and secure the service. We keep a short,
@@ -79,10 +81,11 @@ notes below are indicative only and must be confirmed by the school.
   `[LEGAL REVIEW: confirm Art 6 basis with the school.]`
 - **Special category data (UK GDPR Art 9):** wellbeing/SEND data is special
   category data and additionally needs an Art 9 condition — typically
-  **substantial public interest** (Art 9(2)(g), e.g. safeguarding of children, or
-  the provision of education) under the relevant Schedule 1, Data Protection Act
-  2018 condition. `[LEGAL REVIEW: confirm the Art 9 condition + DPA 2018 Schedule
-  1 condition with the school.]`
+  **substantial public interest** (Art 9(2)(g), e.g. safeguarding of children)
+  under the relevant Schedule 1, Data Protection Act 2018 condition (e.g.
+  paragraph 18, safeguarding of children and individuals at risk). `[LEGAL
+  REVIEW: confirm the Art 9 condition + DPA 2018 Schedule 1 condition with the
+  school.]`
 
 Send Signals does not set the lawful basis; we support the basis the school has
 chosen.
@@ -93,8 +96,12 @@ Solely to support pupil wellbeing and SEND provision within the pupil's own
 school: to let pupils check in, to surface concerns to the school's SEND/pastoral
 team, to raise the alerts the school has configured, and to produce the school's
 own provision/progress records. **We never sell data, use it for advertising, or
-share it outside the pupil's own school team.** We do not use pupil data to train
-AI models (see section 8).
+share it outside the pupil's own school team** — other than with the
+sub-processors in section 8, or where required by law or to protect a child's
+safety. We do not use pupil data to train AI models (see section 8). Alerts and
+welfare flags only prompt school staff to look and decide — no decision about a
+pupil is made solely by automated means (no UK GDPR Article 22 automated
+decision-making).
 
 ## 7. Children's data
 
@@ -104,9 +111,9 @@ The data subjects are children, so we take particular care. The service is
 are built in. A pupil can only ever see their **own** data — never another
 pupil's (enforced in the database, see section 11). We do not profile children
 for marketing and run **no third-party advertising or tracking** of any kind.
-`[LEGAL REVIEW: confirm whether the Children's Code applies in full given Send
-Signals' processor role, or only its principles — ICO edtech guidance is
-role-dependent]` `[LEGAL REVIEW: confirm Children's Code alignment / whether a
+`[LEGAL REVIEW: the principles-only Children's Code approach was agreed with the
+solicitor (2026-06-28); remaining — confirm whether the Code applies in full to
+the native app / app-store distribution]` `[LEGAL REVIEW: confirm whether a
 DPIA is held by the school.]`
 
 ## 8. Who we share data with (sub-processors)
@@ -139,19 +146,15 @@ to protect a child's safety.
 Pupil data is stored at rest in the UK (Supabase, London region). The application
 is served over Vercel's global edge network, which is not pinned to a single region
 and processes data only in transit. Some sub-processors (email, push notifications,
-billing, bot-protection) operate outside the UK — see the sub-processor list and
-the International transfers section. Where personal data is transferred to them we
+billing, bot-protection) operate outside the UK — see the sub-processor list in
+section 8. Where personal data is transferred to them we
 rely on an appropriate transfer safeguard, such as the UK International Data
 Transfer Agreement (IDTA) or the UK Addendum to the EU Standard Contractual
-Clauses. By default, push-notification payloads are generic and contain no pupil
-name, check-in rating or welfare-disclosure content (e.g. "A welfare flag was
-raised. Open the Action Hub for details."). If a school turns on the optional
-"Show student details on lock screen" setting (OFF by default, not recommended),
-wellbeing-alert and welfare-flag push messages then include the pupil's first
-name and, for welfare-flag disclosures, the disclosure message text — visible on
-a locked device. A school enabling this does so under its own policy/risk
-assessment. The in-app Action Hub (behind sign-in) always shows full detail
-regardless of this setting. Welfare-alert emails are data-minimised (no pupil
+Clauses. Push-notification payloads are generic by default (no pupil name,
+check-in rating or welfare-disclosure content) — see the Google Firebase Cloud
+Messaging entry in section 8 for full detail, including the optional "Show
+student details on lock screen" school setting (OFF by default, not
+recommended). Welfare-alert emails are data-minimised (no pupil
 name or check-in content); student-access/login emails sent to a pupil's own
 email address contain a personal sign-in link and the school name but not the
 pupil's name. `[LEGAL REVIEW: confirm transfer mechanism per provider]`
@@ -165,15 +168,19 @@ the school can configure the period.
   (configurable per school). A scheduled purge runs daily and deletes check-ins
   and messages older than the school's chosen window (with a 30-day minimum
   floor).
-- **Welfare flags / disclosures:** these are kept for the **same default period as
-  other check-ins (365 days, configurable per school)** and then deleted by the
-  routine purge — **Send Signals is not the school's long-term safeguarding record.**
-  Before a flag is deleted, the school can review, export and act on it, and mark it
-  as **recorded in the school's own safeguarding system**; after deletion we keep only
-  **minimal evidence with no pupil detail** that a flag existed and was deleted. We
-  surface open flags approaching their deletion date so nothing is lost silently — it
-  is the school's responsibility, as controller, to record disclosures in its own
-  safeguarding system.
+- **Welfare flags / disclosures:** these follow the **school's retention window
+  (default 365 days, 30-day minimum)** — **Send Signals is not the school's
+  long-term safeguarding record.** At the end of the window, a flag the school
+  has marked as **recorded in the school's own safeguarding system** is deleted
+  by the routine purge. A flag that has **not** been marked as recorded is not
+  deleted silently: it is **held — and surfaced to staff in the app —** until
+  the school marks it as recorded or a hard backstop of **180 days past the
+  window** passes, whichever comes first (so an unrecorded flag may be retained
+  for up to around 545 days in total). Before deletion the school can review,
+  export and act on a flag; after deletion we keep only **minimal evidence with
+  no pupil detail** (school, tier, timestamps and deletion reason) that a flag
+  existed and was deleted. It is the school's responsibility, as controller, to
+  record disclosures in its own safeguarding system.
 - **Educational records** (e.g. SEND review/provision records) are **not** removed
   by the routine purge — those require explicit operator action.
 - **Operational logs:** security auth-failure logs and email-delivery logs are
@@ -190,9 +197,9 @@ retention period.]`
   is tested automatically in our build pipeline.
 - **UK data residency** for the pupil database — pupil data is stored at rest in
   the UK (Supabase, London region).
-- **Encryption in transit** (HTTPS with HSTS) and **encryption at rest** `[LEGAL
-  REVIEW: confirm at-rest encryption on the Supabase plan]`, and an **enforced
-  Content-Security-Policy**.
+- **Encryption in transit** (HTTPS with HSTS), **encryption at rest provided by
+  the database platform** `[LEGAL REVIEW: confirm at-rest encryption on the
+  production Supabase plan]`, and an **enforced Content-Security-Policy**.
 - **Secure sessions** — Authentication uses secure, same-site Supabase session
   cookies. In the current browser client these cookies are readable by the
   application's JavaScript, so we also rely on TLS, the SameSite attribute, a
@@ -202,18 +209,17 @@ retention period.]`
   confirm 2FA is enforced for all admin accounts at launch]`
 - **Least-privilege access** and **audit logging** of configuration and permission
   changes.
-- **Backups with point-in-time recovery (PITR)**. `[LEGAL REVIEW: confirm PITR is
-  enabled on the production plan at launch]`
+- **Backups**, with **point-in-time recovery (PITR) being enabled for launch**.
+  `[LEGAL REVIEW: confirm PITR is enabled on the production plan at launch]`
 - **Data minimisation in notifications** — welfare-alert emails contain no pupil
-  name or check-in content. By default, push-notification payloads are generic
-  and contain no pupil name, check-in rating or welfare-disclosure content (e.g.
-  "A welfare flag was raised. Open the Action Hub for details."). If a school
-  turns on the optional "Show student details on lock screen" setting (OFF by
-  default, not recommended), wellbeing-alert and welfare-flag push messages then
-  include the pupil's first name and, for welfare-flag disclosures, the
-  disclosure message text — visible on a locked device. A school enabling this
-  does so under its own policy/risk assessment. The in-app Action Hub (behind
-  sign-in) always shows full detail regardless of this setting.
+  name or check-in content, and push-notification payloads are generic by
+  default (see the Google Firebase Cloud Messaging entry in section 8 for full
+  detail, including the optional "Show student details on lock screen" school
+  setting, OFF by default and not recommended).
+- **Breach notification** — if a personal-data breach affects a school's data,
+  we notify the affected school without undue delay (48-hour target) and assist
+  it; the school, as controller, handles any UK GDPR Article 33 notification to
+  the ICO.
 
 No system is perfectly secure, but we work to protect data with appropriate
 technical and organisational measures.
@@ -237,14 +243,12 @@ against their statutory deadline.
 ## 13. Complaints
 
 If you are unhappy with how your data has been handled, please raise it with your
-school first, as the controller. You also have the right to complain to the
-**Information Commissioner's Office (ICO)** at ico.org.uk — though we'd welcome the
-chance to help resolve it.
-
-You can make a data-protection complaint to us at privacy@sendsignals.co.uk. We
-will acknowledge your complaint within 30 days, investigate it and keep you
-updated without undue delay, and tell you the outcome. You also have the right to
-complain to the Information Commissioner's Office (ICO) at ico.org.uk.
+school first, as the controller. You can also make a data-protection complaint to
+us at privacy@sendsignals.co.uk — we will acknowledge it promptly, investigate it
+and keep you updated, and tell you the outcome without undue delay (and in any
+event within 30 days). You also have the right to complain to the **Information
+Commissioner's Office (ICO)** at ico.org.uk — though we'd welcome the chance to
+help resolve it first.
 
 ## 14. Cookies
 
