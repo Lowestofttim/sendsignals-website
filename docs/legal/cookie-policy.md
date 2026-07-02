@@ -21,14 +21,17 @@ explains how pupil data is handled) and our **Terms & Conditions**.
 
 | Name / Pattern | Type | Purpose | Duration | Category |
 |----------------|------|---------|----------|----------|
-| `sb-*` | Cookie | Supabase authentication/session (keeps a signed-in user logged in) | Session / until sign-out (provider-managed) | Strictly necessary. (Secure + SameSite=Lax; readable by the app's JavaScript, not httpOnly.) |
-| `hq_active` | Cookie | staff/admin idle-timeout timestamp (auto sign-out) | 8 hours | Strictly necessary (security). |
-| `ss_kiosk_token` | Cookie (httpOnly) | device authentication on school-supplied kiosk tablets only | per kiosk session | Strictly necessary. |
-| Cloudflare Turnstile challenge cookie (`cf_*`/`__cf*`, set by Cloudflare) | Cookie (third-party) | bot/abuse protection on the PUBLIC sign-up and demo forms only (never the pupil app) | short-lived | Strictly necessary. |
-| Demo/sandbox session cookies | Cookie (httpOnly) | public demo mode only | demo session | Strictly necessary. |
+| `sb-*` | Cookie | Supabase authentication/session (keeps a signed-in user logged in) | Session / until sign-out (provider-managed); if you tick "remember me" the session persists across browser restarts | Strictly necessary. (Secure + SameSite=Lax; readable by the app's JavaScript, not httpOnly.) |
+| `hq_active` | Cookie | idle-timeout timestamp (auto sign-out) on Send Signals' own internal operations console (`/hq`) — set only for Send Signals platform administrators, not for school staff or pupils | 8 hours | Strictly necessary (security). |
+| `ss_kiosk_token` | Cookie (httpOnly) | device authentication on school-supplied kiosk tablets only | 365 days (long-lived; persists until the school revokes the device) | Strictly necessary. |
+| Cloudflare Turnstile challenge cookie (`cf_*`/`__cf*`, set by Cloudflare) | Cookie (third-party) | bot/abuse protection on the PUBLIC demo-request and live-demo forms only (never the pupil app or the school onboarding/join flows) | short-lived | Strictly necessary. |
+| `ss_sandbox_id` | Cookie (httpOnly) | public demo/sandbox mode only | 1 hour | Strictly necessary. |
 | Telemetry/error client id | Browser storage (localStorage) | a random pseudonymous id for first-party crash/error telemetry (NOT advertising/tracking; no third party) | until cleared | Functional. |
-| Remember-me (email + flag) | Browser storage (localStorage) | pre-fills your email on the sign-in screen IF you tick "remember me" | until cleared | Functional (user-initiated). |
+| Remember-me (email + flag) | Browser storage (localStorage) | pre-fills your email on the sign-in screen IF you tick "remember me" (also makes the sign-in session cookies persistent across browser restarts — see the `sb-*` row) | until cleared | Functional (user-initiated). |
 | Kiosk state (mode / token / student name / fleet token) | Browser storage (localStorage) | supplied-tablet kiosk mode only | until cleared | Strictly necessary (kiosk). |
+| Offline check-in queue (`send-signals-offline`) | Browser storage (IndexedDB) | queues check-ins and welfare signals made while offline so they can be sent when a connection returns | until synced; unsent items are discarded after 14 days (welfare signals: 60 days) | Strictly necessary. |
+| Service-worker app-shell cache | Browser storage (Cache Storage) | caches the app's own static files so it loads quickly and works offline (no personal data) | until cleared / replaced on new releases | Functional (offline support). |
+| `ss_preview_*` | Browser storage (sessionStorage; staff only) | holds a staff-generated report preview while it is open | current tab session | Functional (staff-only). |
 | UI/app state (school-logo cache, demo viewing date, welcome-seen, PWA-install-dismissed, progress-celebrated flags, deep-link-handled, session heartbeat) | Browser storage (local/session) | remember UI preferences and app state | until cleared / session | Functional. |
 
 Browser local/session storage are not cookies but are listed here for
@@ -59,11 +62,11 @@ TTLs are controlled by Supabase and the project's session settings.]`
 
 ## 3. Consent (PECR)
 
-We only store or access information on a device where it is strictly necessary (a
-PECR exception) or where we have obtained the required consent / provided the
-required objection mechanism. Because we set **no** analytics, advertising or
-other cross-site tracking cookies, the app does not need a cookie-consent banner
-for its own functioning.
+Everything we store or access on a device is either **strictly necessary** to
+provide the service (a PECR exception) or limited **functional** storage that
+involves no tracking, no profiling and no third-party access. Because we set
+**no** analytics, advertising or other cross-site tracking cookies, nothing we
+set requires a cookie-consent banner for the app's own functioning.
 
 `[LEGAL REVIEW: confirm the marketing website's own cookie banner/wording matches
 this "essential only" position, and that no non-essential storage is set before
@@ -77,7 +80,7 @@ handles as follows: pupil data is stored at rest in the UK (Supabase, London
 region). The application is served over Vercel's global edge network, which is not
 pinned to a single region and processes data only in transit. Some sub-processors
 (email, push notifications, billing, bot-protection) operate outside the UK — see
-the sub-processor list and the International transfers section.
+the sub-processor list in the Privacy Policy (section 8).
 
 Where a strictly-necessary provider operates internationally (for example,
 Cloudflare's global anti-abuse network serving the Turnstile challenge), that
@@ -98,10 +101,12 @@ processor role, or only its principles — ICO edtech guidance is role-dependent
 
 - We do **not** use cookies or any browser storage to track, profile or target
   children, or to build advertising or behavioural profiles.
-- Pupil-facing pages set only the strictly-necessary login session items needed
-  to let a child sign in and submit a check-in. The Cloudflare anti-abuse
-  challenge and the staff idle-timeout cookie are **not** used in the pupil
-  check-in flow.
+- Pupil-facing pages set only the strictly-necessary sign-in items needed to let
+  a child sign in and submit a check-in, plus the limited functional items in
+  section 1 (the anonymous crash-telemetry id, UI-state flags and the offline
+  check-in queue) — no tracking, profiling or advertising storage, ever. The
+  Cloudflare anti-abuse challenge and the internal operations-console
+  (`hq_active`) cookie are **not** used in the pupil check-in flow.
 - The lawful basis for processing pupil wellbeing information (which is
   **special-category** data under UK GDPR) is the **school's**, as data
   controller — typically the school's public task and its safeguarding duties —
@@ -117,11 +122,14 @@ The cookies themselves expire as set out in section 1. The pupil data they help
 access is kept under the school's retention settings: by default, pupil check-in
 and message history is retained for **365 days** and then automatically deleted
 by a nightly purge. A school can change this window (the minimum the purge will
-honour is 30 days). Welfare-flag disclosure records are kept for the **same default
-period (365 days, configurable)** and then deleted — Send Signals is **not** the
-school's long-term safeguarding record; before deletion the school can review,
-export, action and mark a flag as recorded in its own safeguarding system, and only
-minimal, no-pupil-detail evidence is kept afterwards. When a school stops using Send
+honour is 30 days). Welfare-flag disclosure records follow the **same school
+retention window (default 365 days, 30-day minimum)** — Send Signals is **not**
+the school's long-term safeguarding record. At the end of the window, a flag the
+school has marked as recorded in its own safeguarding system is deleted by the
+routine purge; an unrecorded flag is held — and surfaced to staff in the app —
+until it is marked recorded or a hard backstop of 180 days past the window
+passes, whichever comes first; only minimal, no-pupil-detail evidence is kept
+after deletion. When a school stops using Send
 Signals, its data is deleted or returned to it in line with the Data Processing
 Agreement. Full detail is in the **Privacy Policy**.
 
@@ -131,7 +139,9 @@ You can clear or block cookies and clear site storage in your browser settings,
 and clearing storage will sign you out and remove any cached app data. Because
 the items we use are strictly necessary, **the platform may not function
 correctly** without them — in particular, blocking the session cookie will stop
-you signing in.
+you signing in. Note that clearing site data may also discard any check-ins or
+welfare signals queued offline that have not yet synced (see the offline
+check-in queue in section 1).
 
 ## 8. Security
 
@@ -141,13 +151,12 @@ read another's data and a pupil can only see their own — covered by automated
 tests), secure session cookies and a Content-Security-Policy, two-factor
 authentication (2FA) available for admin accounts `[LEGAL REVIEW: confirm 2FA is
 enforced for all admin accounts at launch]`, audit logging of configuration and
-permission changes, encryption in transit (TLS), and point-in-time-recovery (PITR)
-database backups `[LEGAL REVIEW: confirm PITR is enabled on the production plan at
-launch]`. Authentication uses secure, same-site Supabase session cookies. In the
-current browser client these cookies are readable by the application's JavaScript,
-so we also rely on TLS, the SameSite attribute, a Content-Security-Policy,
-database tenant isolation (RLS), least-privilege access and audit logging. More
-detail is in the **Privacy Policy**.
+permission changes, encryption in transit (TLS), and database backups with
+point-in-time recovery (PITR) being enabled for launch `[LEGAL REVIEW: confirm
+PITR is enabled on the production plan at launch]`. The session-cookie posture
+(Secure + SameSite, readable by the app's JavaScript, backed by TLS, CSP, RLS
+tenant isolation, least-privilege access and audit logging) is described in
+section 1. More detail is in the **Privacy Policy**.
 
 ## 9. Your rights and how to exercise them
 
@@ -166,14 +175,12 @@ Send Signals using the details below and we will help route your request.
 ## 10. Complaints and the ICO
 
 If you are concerned about how your (or your child's) personal data is handled,
-please raise it with the **school** in the first instance. You also have the
+please raise it with the **school** in the first instance. You can also make a
+data-protection complaint to us at privacy@sendsignals.co.uk — we will
+acknowledge it promptly, investigate it and keep you updated, and tell you the
+outcome without undue delay (and in any event within 30 days). You also have the
 right to complain to the UK Information Commissioner's Office (ICO) at
 **ico.org.uk** or by calling its helpline.
-
-You can make a data-protection complaint to us at privacy@sendsignals.co.uk. We
-will acknowledge your complaint within 30 days, investigate it and keep you
-updated without undue delay, and tell you the outcome. You also have the right to
-complain to the Information Commissioner's Office (ICO) at ico.org.uk.
 
 ## 11. Contact
 
